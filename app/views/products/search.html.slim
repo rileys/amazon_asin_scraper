@@ -1,0 +1,31 @@
+h1 Search
+= form_tag search_products_path, method: :get do
+  = text_field_tag :asin, params[:asin], placeholder: 'ASIN'
+  = submit_tag 'Search'
+br
+- if @product.present?
+  #result
+    p
+      b ASIN:
+      br
+      = @product.asin
+
+    p
+      b Category:
+      br
+      = @product.category
+
+    p
+      b Product Dimensions:
+      br
+      = @product.dimensions
+
+    p
+      b Best Sellers Rank:
+      br
+      - @product.product_rankings.each do |ranking|
+        = "##{ranking.number} in #{ranking.category}"
+        br
+
+- elsif params[:asin]
+  h3 Product Not Found

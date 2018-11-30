@@ -24,22 +24,22 @@ class ProductScraper
     return nil unless session.status_code == 200
 
     product = Product.new(asin: @asin)
-    setCategory(session, product)
-    setDimensions(session, product)
-    setProductRankings(session, product)
+    set_category(session, product)
+    set_dimensions(session, product)
+    set_product_rankings(session, product)
 
     product.save
     product
   end
 
   # Find each link text in the categories breadcrumbs and join.
-  def setCategory(session, product)
+  def set_category(session, product)
     category_links = session.all(:css, '#wayfinding-breadcrumbs_feature_div a')
     product.category = category_links.map(&:text).join(' > ')
   end
 
   # Find the table or bullet item for 'Product Dimensions', get its parent content and match the dimension content.
-  def setDimensions(session, product)
+  def set_dimensions(session, product)
     begin
       dimension_string = session.find('.prodDetTable th, #detail-bullets b', text: 'Product Dimensions').find(:xpath, '..').text
       product.dimensions = dimension_string.match(/Product Dimensions:? (.*)/).captures.first
@@ -49,7 +49,7 @@ class ProductScraper
   end
 
   # Find the table or bullet item for 'Best Sellers Rank', get its parent content and extract each ranking.
-  def setProductRankings(session, product)
+  def set_product_rankings(session, product)
     # Split Rank row text on '#'
     rank_strings = session.find('.prodDetTable th, li b', text: 'Best Sellers Rank').find(:xpath, '..').text.split('#')
     # Remove the 'Best Sellers' item
